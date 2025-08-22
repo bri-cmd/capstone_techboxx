@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\CheckoutController;
 
 // Landing Page with products
 Route::get('/', [LandingController::class, 'index'])->name('landing');
@@ -13,3 +14,5 @@ Route::patch('/cart/{id}', [CartController::class, 'update'])->name('cart.update
 Route::delete('/cart/{id}', [CartController::class, 'remove'])->name('cart.remove');
 Route::get('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
 Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+
+Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
