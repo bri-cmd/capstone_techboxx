@@ -36,6 +36,19 @@ class CartController extends Controller
         return redirect()->back()->with('success', $product->name.' added to cart!');
     }
 
+    public function update(Request $request, $id)
+{
+    $cart = session()->get('cart', []);
+
+    if(isset($cart[$id])) {
+        $cart[$id]['quantity'] = $request->quantity; // update the quantity
+        session()->put('cart', $cart);
+    }
+
+    return redirect()->route('cart.index')->with('success', 'Cart updated successfully!');
+}
+
+
     // Remove product
     public function remove($id)
     {
