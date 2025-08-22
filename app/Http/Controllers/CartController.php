@@ -37,17 +37,22 @@ class CartController extends Controller
     }
 
     public function update(Request $request, $id)
-{
-    $cart = session()->get('cart', []);
+    {
+        $cart = session()->get('cart', []);
 
-    if(isset($cart[$id])) {
-        $cart[$id]['quantity'] = $request->quantity; // update the quantity
-        session()->put('cart', $cart);
+        if (isset($cart[$id])) {
+            if ($request->action === 'increase') {
+                $cart[$id]['quantity']++;
+            } elseif ($request->action === 'decrease') {
+                if ($cart[$id]['quantity'] > 1) {
+                    $cart[$id]['quantity']--;
+                }
+            }
+            session()->put('cart', $cart);
+        }
+
+        return redirect()->back()->with('success', 'Cart updated successfully!');
     }
-
-    return redirect()->route('cart.index')->with('success', 'Cart updated successfully!');
-}
-
 
     // Remove product
     public function remove($id)
@@ -59,6 +64,21 @@ class CartController extends Controller
             session()->put('cart', $cart);
         }
 
-        return redirect()->back()->with('success', 'Product removed from cart.');
+        return redirect()->back()->with('success', 'Item removed from cart!');
     }
+
+    public function checkout(Request $request)
+{
+    $selectedItems = json_decode($request->get('selected_items'), true);
+
+    if (empty($selectedItems)) {
+        return redirect()->route('cart.index')->with('error', 'No items selected for checkout.');
+    }
+
+    $cart = session()->get('cart', []);
+    $items = array_intersect_key($cart, array_flip($selectedItems));
+
+    return view('checkout', compact('items'));
+}
+
 }
